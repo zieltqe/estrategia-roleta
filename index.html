@@ -4,35 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Roleta Estratégica</title>
-  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/jpeg" href="roleta.jpg" />
-  <style>
-    .roleta-img {
-      display: block;
-      margin: 20px auto;
-      width: 512px;
-      height: auto;
-      border-radius: 10px;
-    }
-  </style>
 </head>
 <body>
-  <h1>Roleta Estratégica</h1>
-  
-  <!-- Imagem no topo -->
-  <img src="roleta.jpg" alt="Roleta" class="roleta-img" />
-
-  <input type="number" id="numero" placeholder="Digite o número" />
-  <button onclick="registrarNumero()">Registrar</button>
-  <button onclick="limparHistorico()">Limpar Histórico</button>
-
-  <div id="historico"></div>
-  <div id="resultadoCores"></div>
-
-  <!-- Resto do código JS permanece o mesmo -->
-  <script>
-    // (todo o JS permanece igual ao anterior)
-  </script>
+  <div class="container">
+    <h1>Roleta Estratégica</h1>
+    <img src="roleta.png" alt="Roleta" class="roleta-img" />
+    <input type="text" id="numero" placeholder="Digite o número" />
+    <div class="botoes">
+      <button onclick="registrar()">Registrar</button>
+      <button onclick="limparHistorico()">Limpar Histórico</button>
+    </div>
+    <div id="historico"></div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
