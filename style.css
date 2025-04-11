@@ -6,7 +6,8 @@
 
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(145deg, #1f1f1f, #2c2c2c);
+  background: url('roleta.jpg') no-repeat center center fixed;
+  background-size: cover;
   color: #fff;
   display: flex;
   justify-content: center;
@@ -16,7 +17,7 @@ body {
 
 .container {
   text-align: center;
-  background-color: #333;
+  background-color: rgba(0, 0, 0, 0.75);
   padding: 30px;
   border-radius: 16px;
   box-shadow: 0 0 20px #000;
@@ -72,4 +73,4 @@ ul li {
   margin: 3px 0;
   padding: 8px;
   border-radius: 6px;
-  }
+}
