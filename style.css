@@ -1,76 +1,56 @@
-* {
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background: url('roleta.jpg') no-repeat center center fixed;
-  background-size: cover;
-  color: #fff;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
 }
 
 .container {
   text-align: center;
-  background-color: rgba(0, 0, 0, 0.75);
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 0 20px #000;
-  max-width: 400px;
-  width: 100%;
+  padding: 20px;
 }
 
 h1 {
   margin-bottom: 20px;
-  font-size: 1.8rem;
+  font-size: 28px;
 }
 
-input {
-  padding: 10px;
-  width: 100%;
-  border: none;
-  border-radius: 8px;
+.roleta-img {
+  width: 512px;
+  max-width: 100%;
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  padding: 12px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
   margin-bottom: 10px;
-  font-size: 1rem;
+}
+
+.botoes {
+  margin-bottom: 20px;
 }
 
 button {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  background-color: #4caf50;
-  color: white;
-  font-size: 1rem;
+  padding: 10px 20px;
   margin: 5px;
+  border: none;
+  border-radius: 10px;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 button:hover {
   background-color: #45a049;
 }
 
-p {
-  margin: 15px 0;
-  font-size: 1rem;
-}
-
-ul {
-  list-style: none;
-  margin-top: 10px;
-  max-height: 150px;
-  overflow-y: auto;
-  padding: 0;
-}
-
-ul li {
-  background: #444;
-  margin: 3px 0;
-  padding: 8px;
-  border-radius: 6px;
+#historico {
+  max-width: 90%;
+  margin: 0 auto;
 }
