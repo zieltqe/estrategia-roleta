@@ -1,22 +1,116 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!DOCTYPE html><html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Roleta Estratégica</title>
+  <title>Roleta Estratégica2</title>
+  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="roleta.jpg" />
 </head>
 <body>
-  <div class="container">
-    <h1>Roleta Estratégica</h1>
-    <img src="roleta.png" alt="Roleta" class="roleta-img" />
-    <input type="text" id="numero" placeholder="Digite o número" />
-    <div class="botoes">
-      <button onclick="registrar()">Registrar</button>
-      <button onclick="limparHistorico()">Limpar Histórico</button>
-    </div>
-    <div id="historico"></div>
-  </div>
-  <script src="script.js"></script>
-</body>
-</html>
+  <h1>Roleta Estratégica2</h1>
+  <img src="roleta.jpg" alt="Roleta" class="roleta-img" />  <input type="number" id="numero" placeholder="Digite o número" />
+  <button onclick="registrarNumero()">Registrar</button>
+  <button onclick="limparHistorico()">Limpar Histórico</button>  <div id="historico"></div>
+  <div id="resultadoCores"></div>  <script>
+    let historico = [];
+    let sinal = null;
+    let gale = 0;
+    let invertendo = false;
+    let tentativasInvertido = 0;
+
+    function corDoNumero(n) {
+      const vermelhos = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+      if (n === 0) return "verde";
+      return vermelhos.includes(n) ? "vermelho" : "preto";
+    }
+
+    function registrarNumero() {
+      const input = document.getElementById("numero");
+      const num = parseInt(input.value);
+      if (isNaN(num) || num < 0 || num > 36) return alert("Número inválido!");
+      historico.unshift(num);
+      if (historico.length > 30) historico.pop();
+      atualizarInterface();
+      input.value = "";
+    }
+
+    function limparHistorico() {
+      historico = [];
+      sinal = null;
+      gale = 0;
+      invertendo = false;
+      tentativasInvertido = 0;
+      atualizarInterface();
+    }
+
+    function atualizarInterface() {
+      document.getElementById("historico").innerHTML =
+        `<h3>Histórico:</h3> <p>${historico.join(', ')}</p>`;
+      aplicarEstrategiaCores();
+    }
+
+    function aplicarEstrategiaCores() {
+      const cores = historico.map(corDoNumero);
+      let corAtual = cores[0];
+      let sequencia = 1;
+      for (let i = 1; i < cores.length; i++) {
+        if (cores[i] === corAtual) {
+          sequencia++;
+        } else {
+          break;
+        }
+      }
+
+      if (!sinal && sequencia >= 3 && sequencia <= 30) {
+        sinal = corAtual;
+        gale = 1;
+        invertendo = false;
+        tentativasInvertido = 0;
+        document.getElementById("resultadoCores").innerHTML =
+          `<h3>Cores</h3><p><strong>Sinal confirmado:</strong> Jogue ${sinal.toUpperCase()} (Gale ${gale})</p>`;
+      } else if (sinal) {
+        const corNova = corDoNumero(historico[0]);
+        if (corNova === sinal) {
+          document.getElementById("resultadoCores").innerHTML += `<p><strong>Megafone:</strong> GANHOU!</p>`;
+          sinal = null;
+          gale = 0;
+        } else {
+          gale++;
+          if (gale <= 3) {
+            document.getElementById("resultadoCores").innerHTML =
+              `<h3>Cores</h3><p><strong>Sinal confirmado:</strong> Jogue ${sinal.toUpperCase()} (Gale ${gale})</p>`;
+          } else {
+            invertendo = true;
+            tentativasInvertido = 1;
+            document.getElementById("resultadoCores").innerHTML =
+              `<h3>Cores</h3><p><strong>Sinal INVERTIDO:</strong> Jogue ${corNova.toUpperCase()} (Tentativa ${tentativasInvertido})</p>`;
+            sinal = null;
+            gale = 0;
+          }
+        }
+      } else if (invertendo) {
+        const corNova = corDoNumero(historico[0]);
+        if (tentativasInvertido <= 2) {
+          if (corNova === cores[1]) {
+            document.getElementById("resultadoCores").innerHTML += `<p><strong>Megafone:</strong> GANHOU no sinal invertido!</p>`;
+            invertendo = false;
+            tentativasInvertido = 0;
+          } else {
+            tentativasInvertido++;
+            if (tentativasInvertido <= 2) {
+              document.getElementById("resultadoCores").innerHTML =
+                `<h3>Cores</h3><p><strong>Sinal INVERTIDO:</strong> Jogue ${corNova.toUpperCase()} (Tentativa ${tentativasInvertido})</p>`;
+            } else {
+              document.getElementById("resultadoCores").innerHTML += `<p><strong>Megafone:</strong> PERDEU no sinal invertido!</p>`;
+              invertendo = false;
+              tentativasInvertido = 0;
+            }
+          }
+        }
+      } else {
+        document.getElementById("resultadoCores").innerHTML = "<h3>Cores</h3><p>Aguardando padrão...</p>";
+      }
+    }
+  </script></body>
+  </html>
