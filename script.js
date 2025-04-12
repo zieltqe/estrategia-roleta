@@ -150,4 +150,4 @@ function mostrarSequencias() {
     .join('<br>');
 
   document.getElementById('sequencias').innerHTML = `Sequências mais comuns:<br>${resultadoSequencias}`;
-}
+      }
