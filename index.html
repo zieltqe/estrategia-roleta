@@ -7,26 +7,17 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Roleta Estratégica</h1>
+  <h1>Roleta Estratégica</h1>
 
-    <input type="number" id="numeroInput" placeholder="Digite um número de 0 a 36" />
-    <div class="botoes">
-      <button onclick="registrarNumero()">Registrar</button>
-      <button onclick="limparDados()">Limpar</button>
-    </div>
+  <input type="number" id="numeroInput" placeholder="Digite o número de 0 a 36" />
+  <br>
+  <button onclick="registrarNumero()">Registrar</button>
+  <button onclick="limparDados()">Limpar</button>
 
-    <div id="resultado"></div>
-
-    <h2>Histórico</h2>
-    <ul id="listaNumeros"></ul>
-
-    <h2>Números mais frequentes</h2>
-    <div id="repetidos"></div>
-
-    <h2>Sequência de Cores</h2>
-    <div id="sequencias"></div>
-  </div>
+  <div id="resultado"></div>
+  <ul id="listaNumeros"></ul>
+  <div id="repetidos"></div>
+  <div id="sequenciasMaisRepetidas"></div>
 
   <script src="script.js"></script>
 </body>
