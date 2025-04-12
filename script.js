@@ -3,7 +3,7 @@ let sinalAtivo = null;
 let gale = 0;
 let invertido = false;
 let tentativasInvertidas = 0;
-let sequencias = [];  // Para armazenar os padrões de cores
+let sequenciasDetectadas = [];  // Para armazenar os padrões de cores
 
 function obterCor(numero) {
   if (numero === 0) return 'verde';
@@ -22,7 +22,7 @@ function registrarNumero() {
   if (numeros.length > 100) numeros.shift();
 
   atualizarLista();
-  mostrarSequencias();
+  detectarSequencias();
   aplicarEstrategia();
 }
 
@@ -38,11 +38,11 @@ function aplicarEstrategia() {
   const padrao = `${corAnterior}, ${corAtual}`;
 
   // Registrar o padrão
-  sequencias.push(padrao);
-  if (sequencias.length > 100) sequencias.shift();  // Limitar a quantidade de padrões registrados
+  sequenciasDetectadas.push(padrao);
+  if (sequenciasDetectadas.length > 100) sequenciasDetectadas.shift();  // Limitar a quantidade de padrões registrados
 
   // Contabilizar quantas vezes o padrão aparece
-  const contagemPadrao = sequencias.filter(p => p === padrao).length;
+  const contagemPadrao = sequenciasDetectadas.filter(p => p === padrao).length;
 
   if (contagemPadrao >= 5) {
     sinalAtivo = corAtual;
@@ -58,7 +58,7 @@ function resetarEstrategia() {
   gale = 0;
   invertido = false;
   tentativasInvertidas = 0;
-  sequencias = [];  // Resetando os padrões
+  sequenciasDetectadas = [];  // Resetando os padrões
 }
 
 function limparDados() {
@@ -81,23 +81,29 @@ function atualizarLista() {
   });
 }
 
-function mostrarSequencias() {
+function detectarSequencias() {
   const cores = numeros.map(obterCor);
-  let sequenciasMostradas = [];
-  let atual = cores[0];
-  let contagem = 1;
-
-  // Detectando padrões de sequências
+  let sequencias = [];
+  
+  // Identificando padrões de sequência
   for (let i = 1; i < cores.length; i++) {
-    if (cores[i] === atual) {
-      contagem++;
-    } else {
-      if (contagem >= 2) sequenciasMostradas.push(`${atual} (${contagem}x)`);
-      atual = cores[i];
-      contagem = 1;
+    for (let j = i + 1; j < cores.length; j++) {
+      let padrao = cores.slice(i, j + 1).join(', ');
+      sequencias.push(padrao);
     }
   }
-  if (contagem >= 2) sequenciasMostradas.push(`${atual} (${contagem}x)`);
 
-  document.getElementById('sequencias').textContent = `Sequências: ${sequenciasMostradas.join(', ')}`;
-}
+  // Contabilizando e mostrando os padrões
+  const contagemSequencias = {};
+  sequencias.forEach(padrao => {
+    contagemSequencias[padrao] = (contagemSequencias[padrao] || 0) + 1;
+  });
+
+  // Encontrar e exibir os padrões mais repetidos
+  const sequenciasMaisComuns = Object.entries(contagemSequencias)
+    .filter(([padrao, count]) => count >= 5)
+    .map(([padrao, count]) => `${padrao} (${count}x)`)
+    .join(', ');
+
+  document.getElementById('sequencias').textContent = `Sequências detectadas: ${sequenciasMaisComuns}`;
+    }
