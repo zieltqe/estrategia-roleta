@@ -1,111 +1,149 @@
-* {
-  box-sizing: border-box;
+let numeros = [];
+let sinal = null;
+let gale = 0;
+let tentativasInvertidas = 0;
+let emInvertido = false;
+let corSequencia = null;
+let contagemSequencia = 0;
+
+function obterCor(numero) {
+  if (numero === 0) return 'verde';
+  const vermelhos = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+  return vermelhos.includes(numero) ? 'vermelho' : 'preto';
 }
 
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom right, #d3cce3, #e9e4f0);
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
+function registrarNumero() {
+  const input = document.getElementById('numeroInput');
+  const numero = parseInt(input.value);
+  input.value = '';
+
+  if (isNaN(numero) || numero < 0 || numero > 36) return;
+
+  numeros.push(numero);
+  if (numeros.length > 100) numeros.shift();
+
+  atualizarLista();
+  mostrarRepetidos();
+  mostrarSequencias();
+  analisarSequencia();
 }
 
-.container {
-  max-width: 500px;
-  width: 100%;
-  background-color: white;
-  margin: 20px;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  text-align: center;
-}
+function analisarSequencia() {
+  const resultado = document.getElementById('resultado');
+  const n = numeros.length;
+  if (n < 4) return;
 
-h1 {
-  color: #2c3e50;
-  margin-bottom: 20px;
-}
+  const ultimaCor = obterCor(numeros[n - 1]);
 
-input[type="number"] {
-  padding: 12px;
-  width: 100%;
-  max-width: 300px;
-  margin: 10px auto;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-
-.botoes {
-  margin: 10px 0;
-}
-
-button {
-  padding: 10px 20px;
-  margin: 5px;
-  font-size: 1rem;
-  background-color: #2980b9;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover {
-  background-color: #1c5984;
-}
-
-#resultado {
-  margin-top: 20px;
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-#listaNumeros {
-  list-style: none;
-  padding: 0;
-  margin-top: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-#listaNumeros li {
-  margin: 5px;
-  padding: 8px 12px;
-  border-radius: 20px;
-  color: white;
-  font-weight: bold;
-}
-
-li.vermelho { background-color: #c0392b; }
-li.preto { background-color: #2c3e50; }
-li.verde { background-color: #27ae60; }
-
-#sequenciasRepetidas {
-  margin-top: 15px;
-  font-size: 1rem;
-  color: #34495e;
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 15px;
+  if (sinal) {
+    if (ultimaCor === sinal.cor || ultimaCor === 'verde') {
+      resultado.textContent = `GANHOU no ${sinal.cor.toUpperCase()}!`;
+      resetarSinal();
+    } else {
+      if (!emInvertido) {
+        gale++;
+        if (gale < 2) {
+          resultado.textContent = `Tentativa ${gale + 1} no ${sinal.cor.toUpperCase()}`;
+        } else {
+          emInvertido = true;
+          tentativasInvertidas = 1;
+          sinal.cor = obterCor(numeros[n - 1]);
+          resultado.textContent = `Invertendo sinal para ${sinal.cor.toUpperCase()} - Tentativa 1`;
+        }
+      } else {
+        tentativasInvertidas++;
+        if (tentativasInvertidas < 4) {
+          resultado.textContent = `Tentativa ${tentativasInvertidas} no invertido: ${sinal.cor.toUpperCase()}`;
+        } else {
+          resultado.textContent = `PERDEU após todas as tentativas.`;
+          resetarSinal();
+        }
+      }
+    }
+    return;
   }
 
-  input[type="number"],
-  button {
-    width: 100%;
-    max-width: none;
+  corSequencia = obterCor(numeros[n - 2]);
+  contagemSequencia = 1;
+
+  for (let i = n - 3; i >= 0; i--) {
+    const cor = obterCor(numeros[i]);
+    if (cor === corSequencia) {
+      contagemSequencia++;
+    } else {
+      break;
+    }
   }
 
-  .botoes {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  const corAtual = obterCor(numeros[n - 1]);
+  if (contagemSequencia >= 3 && contagemSequencia <= 30 && corAtual !== corSequencia) {
+    sinal = { cor: corSequencia };
+    gale = 0;
+    tentativasInvertidas = 0;
+    emInvertido = false;
+    resultado.textContent = `SINAL DETECTADO: Jogar ${sinal.cor.toUpperCase()} (Gale 1)`;
   }
+}
+
+function resetarSinal() {
+  sinal = null;
+  gale = 0;
+  tentativasInvertidas = 0;
+  emInvertido = false;
+  corSequencia = null;
+  contagemSequencia = 0;
+}
+
+function limparDados() {
+  numeros = [];
+  resetarSinal();
+  document.getElementById('resultado').textContent = '';
+  document.getElementById('listaNumeros').innerHTML = '';
+  document.getElementById('repetidos').textContent = '';
+  document.getElementById('sequencias').textContent = '';
+}
+
+function atualizarLista() {
+  const ul = document.getElementById('listaNumeros');
+  ul.innerHTML = '';
+  numeros.slice().reverse().forEach(num => {
+    const li = document.createElement('li');
+    const cor = obterCor(num);
+    li.textContent = num;
+    li.className = cor;
+    ul.appendChild(li);
+  });
+}
+
+function mostrarRepetidos() {
+  const contagem = {};
+  numeros.forEach(num => contagem[num] = (contagem[num] || 0) + 1);
+
+  const repetidos = Object.entries(contagem)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([num, qtd]) => `${num} (${qtd}x)`)
+    .join(', ');
+
+  document.getElementById('repetidos').textContent = `Mais saíram: ${repetidos}`;
+}
+
+function mostrarSequencias() {
+  const cores = numeros.map(obterCor);
+  let sequencias = [];
+  let atual = cores[0];
+  let contagem = 1;
+
+  for (let i = 1; i < cores.length; i++) {
+    if (cores[i] === atual) {
+      contagem++;
+    } else {
+      if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
+      atual = cores[i];
+      contagem = 1;
+    }
+  }
+  if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
+
+  document.getElementById('sequencias').textContent = `Sequências: ${sequencias.join(', ')}`;
     }
