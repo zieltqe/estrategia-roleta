@@ -1,37 +1,7 @@
-let numeros = [];
-let sinalAtivo = null;
-let gale = 0;
-let invertido = false;
-let tentativasInvertidas = 0;
-let tentativas = 0;  // Nova variável para contar tentativas
-
-function obterCor(numero) {
-  if (numero === 0) return 'verde';
-  const vermelhos = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
-  return vermelhos.includes(numero) ? 'vermelho' : 'preto';
-}
-
-function registrarNumero() {
-  const input = document.getElementById('numeroInput');
-  const numero = parseInt(input.value);
-  input.value = '';
-
-  if (isNaN(numero) || numero < 0 || numero > 36) return;
-
-  numeros.push(numero);
-  if (numeros.length > 100) numeros.shift();
-
-  atualizarLista();
-  mostrarRepetidos();
-  mostrarSequencias();
-  
-  aplicarEstrategia(); // <- Nova função chamada aqui
-}
-
 function aplicarEstrategia() {
   const resultado = document.getElementById('resultado');
   const n = numeros.length;
-  if (n < 5) return; // A estratégia só aplica quando há 5 ou mais números registrados
+  if (n < 4) return;
 
   const corAtual = obterCor(numeros[n - 1]);
 
@@ -62,115 +32,21 @@ function aplicarEstrategia() {
     return;
   }
 
-  // Detecção de sequência de cores
+  // Detecção da sequência
   let baseCor = obterCor(numeros[n - 2]);
   let contagem = 1;
-  for (let i = n - 3; i >= 0 && contagem < 30; i--) {
+  for (let i = n - 3; i >= 0; i--) {
     if (obterCor(numeros[i]) === baseCor) {
       contagem++;
     } else break;
   }
 
-  // Se houver sequência repetida de 5 ou mais vezes, define o sinal
+  // Aqui a modificação, agora verificamos se a sequência atingiu 5
   if (contagem >= 5 && corAtual !== baseCor) {
     sinalAtivo = baseCor;
     gale = 0;
     invertido = false;
     tentativasInvertidas = 0;
-    tentativas = 0; // Reinicia as tentativas
     resultado.textContent = `SINAL: Jogar ${sinalAtivo.toUpperCase()} (Sequência anterior de ${contagem})`;
   }
 }
-
-function resetarEstrategia() {
-  sinalAtivo = null;
-  gale = 0;
-  invertido = false;
-  tentativasInvertidas = 0;
-  tentativas = 0;  // Resetar tentativas
-}
-
-function limparDados() {
-  numeros = [];
-  resetarEstrategia();
-  document.getElementById('resultado').textContent = '';
-  document.getElementById('listaNumeros').innerHTML = '';
-  document.getElementById('repetidos').textContent = '';
-  document.getElementById('sequencias').textContent = '';
-}
-
-function atualizarLista() {
-  const ul = document.getElementById('listaNumeros');
-  ul.innerHTML = '';
-  numeros.slice().reverse().forEach(num => {
-    const li = document.createElement('li');
-    const cor = obterCor(num);
-    li.textContent = num;
-    li.className = cor;
-    ul.appendChild(li);
-  });
-}
-
-function mostrarRepetidos() {
-  const contagem = {};
-  numeros.forEach(num => contagem[num] = (contagem[num] || 0) + 1);
-
-  const repetidos = Object.entries(contagem)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([num, qtd]) => `${num} (${qtd}x)`)
-    .join(', ');
-
-  document.getElementById('repetidos').textContent = `Mais saíram: ${repetidos}`;
-}
-
-function mostrarSequencias() {
-  const cores = numeros.map(obterCor);
-  let sequencias = [];
-  let atual = cores[0];
-  let contagem = 1;
-
-  for (let i = 1; i < cores.length; i++) {
-    if (cores[i] === atual) {
-      contagem++;
-    } else {
-      if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
-      atual = cores[i];
-      contagem = 1;
-    }
-  }
-  if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
-
-  document.getElementById('sequencias').textContent = `Sequências: ${sequencias.join(', ')}`;
-}
-
-// Função para fazer as tentativas
-function fazerTentativa() {
-  const resultado = document.getElementById('resultado');
-  const ultimaCor = obterCor(numeros[numeros.length - 1]); // Cor do último número registrado
-
-  if (sinalAtivo === null) {
-    resultado.textContent = "Nenhum sinal detectado!";
-    return;
-  }
-
-  if (tentativas < 3) {
-    // Incrementa a tentativa
-    tentativas++;
-
-    // Se acertar, avisa que ganhou
-    if (ultimaCor === sinalAtivo || ultimaCor === 'verde') {
-      resultado.textContent = `GANHOU no ${sinalAtivo.toUpperCase()}!`;
-      resetarEstrategia();
-    } else {
-      // Se ainda houver tentativas
-      if (tentativas < 3) {
-        resultado.textContent = `Tentativa ${tentativas + 1} no ${sinalAtivo.toUpperCase()}`;
-      } else {
-        // Se todas as tentativas foram usadas, avisa que perdeu
-        resultado.textContent = `PERDEU após todas as tentativas.`;
-        resetarEstrategia();
-      }
-    }
-  }
-            }
