@@ -136,7 +136,7 @@ function mostrarSequencias() {
 
   const cores = numeros.map(obterCor);
   const sequencias = {};
-  const tamanhoSequencia = 2, 3, 4, 5; // você pode ajustar para 2, 4, etc.
+  const tamanhoSequencia = 3; // você pode ajustar para 2, 4, etc.
 
   for (let i = 0; i <= cores.length - tamanhoSequencia; i++) {
     const seq = cores.slice(i, i + tamanhoSequencia).join(' → ');
