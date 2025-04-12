@@ -3,21 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Roleta Estratégica 2</title>
-  <link rel="manifest" href="manifest.json" />
+  <title>Roleta Estratégica</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="roleta.jpg" />
 </head>
 <body>
-  <h1>Roleta Estratégica 2</h1>
+  <h1>Roleta Estratégica</h1>
 
-  <img src="roleta.jpg" alt="Roleta" class="roleta-img" style="width: 512px; display: block; margin: 0 auto;" />
-
-  <input type="number" id="numeroInput" placeholder="Digite o número" />
+  <input type="number" id="numeroInput" placeholder="Digite o número de 0 a 36" />
+  <br>
   <button onclick="registrarNumero()">Registrar</button>
-  <button onclick="limparDados()">Limpar Histórico</button>
+  <button onclick="limparDados()">Limpar</button>
 
-  <div id="resultado" style="margin-top: 20px; font-weight: bold;"></div>
+  <div id="resultado"></div>
   <ul id="listaNumeros"></ul>
   <div id="repetidos"></div>
 
