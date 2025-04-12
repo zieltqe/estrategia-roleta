@@ -10,11 +10,12 @@ body {
 h1 {
   margin-bottom: 20px;
   color: #2c3e50;
+  font-size: 2em;
 }
 
 .roleta-img {
-  width: 512px;
-  max-width: 90%;
+  width: 100%;
+  max-width: 512px;
   margin-bottom: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
@@ -22,8 +23,9 @@ h1 {
 
 input[type="number"] {
   padding: 10px;
-  font-size: 16px;
-  width: 200px;
+  font-size: 1rem;
+  width: 90%;
+  max-width: 220px;
   margin: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -32,7 +34,7 @@ input[type="number"] {
 button {
   padding: 10px 20px;
   margin: 5px;
-  font-size: 16px;
+  font-size: 1rem;
   color: #fff;
   background-color: #27ae60;
   border: none;
@@ -46,7 +48,7 @@ button:hover {
 
 #resultado {
   margin-top: 20px;
-  font-size: 18px;
+  font-size: 1.1rem;
   font-weight: bold;
 }
 
@@ -54,19 +56,39 @@ button:hover {
   list-style: none;
   padding: 0;
   margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 #listaNumeros li {
-  display: inline-block;
   margin: 5px;
   padding: 8px 12px;
   background-color: #ecf0f1;
   border-radius: 5px;
   font-weight: bold;
+  font-size: 0.95rem;
 }
 
 #repetidos {
   margin-top: 20px;
   font-style: italic;
   color: #7f8c8d;
+}
+
+/* Responsividade extra para telas menores */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5em;
+  }
+
+  button {
+    width: 90%;
+    max-width: 250px;
+    margin-top: 10px;
+  }
+
+  input[type="number"] {
+    width: 90%;
+  }
 }
