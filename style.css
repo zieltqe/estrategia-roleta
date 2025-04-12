@@ -1,33 +1,48 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
-  background-color: #fafafa;
+  background-color: #f1f1f1;
+  color: #333;
   margin: 0;
   padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
 }
 
 .container {
   max-width: 500px;
-  margin: auto;
+  width: 100%;
   padding: 20px;
+  margin: 20px auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   text-align: center;
 }
 
 h1 {
+  font-size: 2em;
   color: #2c3e50;
+  margin-bottom: 20px;
 }
 
 input[type="number"] {
   padding: 10px;
   font-size: 1rem;
-  width: 80%;
-  max-width: 250px;
+  width: 100%;
+  max-width: 300px;
   margin: 10px auto;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 5px;
 }
 
 .botoes {
-  margin: 10px 0;
+  margin-top: 10px;
 }
 
 button {
@@ -37,7 +52,7 @@ button {
   background-color: #27ae60;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
@@ -46,7 +61,7 @@ button:hover {
 }
 
 #resultado {
-  margin-top: 15px;
+  margin-top: 20px;
   font-weight: bold;
   font-size: 1.1rem;
 }
@@ -54,33 +69,40 @@ button:hover {
 #listaNumeros {
   list-style: none;
   padding: 0;
+  margin-top: 20px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 #listaNumeros li {
-  margin: 4px;
-  padding: 6px 10px;
+  margin: 5px;
+  padding: 8px 12px;
+  background-color: #ecf0f1;
   border-radius: 5px;
   font-weight: bold;
-  color: #fff;
 }
 
-.vermelho {
-  background-color: #e74c3c;
-}
-
-.preto {
-  background-color: #2c3e50;
-}
-
-.verde {
-  background-color: #27ae60;
-}
-
-#repetidos, #sequencias {
-  margin-top: 10px;
+#repetidos {
+  margin-top: 20px;
+  color: #7f8c8d;
   font-style: italic;
-  color: #555;
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5em;
+  }
+
+  input[type="number"],
+  button {
+    width: 100%;
+    max-width: none;
+  }
+
+  .botoes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 }
