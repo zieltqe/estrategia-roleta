@@ -251,43 +251,26 @@ function mostrarRepetidos() {
 }
 
 function mostrarSequencias() {
+  if (numeros.length < 3) {
+    document.getElementById('sequencias').textContent = 'Sequências: (mínimo 3 números)';
+    return;
+  }
+
   const cores = numeros.map(obterCor);
-  let sequencias = [];
-  let atual = cores[0];
-  let contagem = 1;
+  const sequencias = {};
+  const tamanhoSequencia = 3; // você pode ajustar para 2, 4, etc.
 
-  for (let i = 1; i < cores.length; i++) {
-    if (cores[i] === atual) {
-      contagem++;
-    } else {
-      if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
-      atual = cores[i];
-      contagem = 1;
-    }
-  }
-  if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
-
-  document.getElementById('sequencias').textContent = `Sequências: ${sequencias.join(', ')}`;
-
-  // ADIÇÃO: detectar padrões alternados de cores
-  const padroes = {};
-  for (let i = 0; i <= cores.length - 4; i++) {
-    const padrao = cores.slice(i, i + 4).join('-');
-    padroes[padrao] = (padroes[padrao] || 0) + 1;
+  for (let i = 0; i <= cores.length - tamanhoSequencia; i++) {
+    const seq = cores.slice(i, i + tamanhoSequencia).join(' → ');
+    sequencias[seq] = (sequencias[seq] || 0) + 1;
   }
 
-  const padroesRepetidos = Object.entries(padroes)
-    .filter(([_, qtd]) => qtd >= 2)
-    .sort((a, b) => b[1] - a[1]);
+  const resultadoSequencias = Object.entries(sequencias)
+    .sort((a, b) => b[1] - a[1])
+    .map(([seq, vezes]) => `${seq} - ${vezes} vez${vezes > 1 ? 'es' : ''}`)
+    .slice(0, 5) // mostra só as 5 mais frequentes
+    .join('<br>');
 
-  if (padroesRepetidos.length) {
-    const lista = padroesRepetidos.map(([p, qtd]) => `${p} (${qtd}x)`).join(', ');
-    document.getElementById('sequencias').textContent += ` | Padrões: ${lista}`;
-    
-    const padraoAlvo = padroesRepetidos.find(([_, qtd]) => qtd >= 5);
-    if (padraoAlvo) {
-      const corFinal = padraoAlvo[0].split('-').pop();
-      document.getElementById('resultado').textContent = `PADRÃO FORTE DETECTADO: Apostar em ${corFinal.toUpperCase()} (Padrão ${padraoAlvo[0]} ocorreu ${padraoAlvo[1]}x)`;
-    }
-  }
-          }
+  document.getElementById('sequencias').innerHTML = `Sequências mais comuns:<br>${resultadoSequencias}`;
+}
+
