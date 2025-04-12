@@ -24,7 +24,6 @@ function registrarNumero() {
 
   atualizarLista();
   mostrarRepetidos();
-  mostrarSequencias();
   analisarSequencia();
 }
 
@@ -35,6 +34,7 @@ function analisarSequencia() {
 
   const ultimaCor = obterCor(numeros[n - 1]);
 
+  // Fase de sinal ativo
   if (sinal) {
     if (ultimaCor === sinal.cor || ultimaCor === 'verde') {
       resultado.textContent = `GANHOU no ${sinal.cor.toUpperCase()}!`;
@@ -47,7 +47,7 @@ function analisarSequencia() {
         } else {
           emInvertido = true;
           tentativasInvertidas = 1;
-          sinal.cor = obterCor(numeros[n - 1]);
+          sinal.cor = obterCor(numeros[n - 1]); // Nova tendência
           resultado.textContent = `Invertendo sinal para ${sinal.cor.toUpperCase()} - Tentativa 1`;
         }
       } else {
@@ -63,6 +63,7 @@ function analisarSequencia() {
     return;
   }
 
+  // Fase de detecção da sequência para criar o sinal
   corSequencia = obterCor(numeros[n - 2]);
   contagemSequencia = 1;
 
@@ -77,7 +78,9 @@ function analisarSequencia() {
 
   const corAtual = obterCor(numeros[n - 1]);
   if (contagemSequencia >= 3 && contagemSequencia <= 30 && corAtual !== corSequencia) {
-    sinal = { cor: corSequencia };
+    sinal = {
+      cor: corSequencia
+    };
     gale = 0;
     tentativasInvertidas = 0;
     emInvertido = false;
@@ -100,7 +103,6 @@ function limparDados() {
   document.getElementById('resultado').textContent = '';
   document.getElementById('listaNumeros').innerHTML = '';
   document.getElementById('repetidos').textContent = '';
-  document.getElementById('sequencias').textContent = '';
 }
 
 function atualizarLista() {
@@ -108,9 +110,7 @@ function atualizarLista() {
   ul.innerHTML = '';
   numeros.slice().reverse().forEach(num => {
     const li = document.createElement('li');
-    const cor = obterCor(num);
     li.textContent = num;
-    li.className = cor;
     ul.appendChild(li);
   });
 }
@@ -127,23 +127,3 @@ function mostrarRepetidos() {
 
   document.getElementById('repetidos').textContent = `Mais saíram: ${repetidos}`;
 }
-
-function mostrarSequencias() {
-  const cores = numeros.map(obterCor);
-  let sequencias = [];
-  let atual = cores[0];
-  let contagem = 1;
-
-  for (let i = 1; i < cores.length; i++) {
-    if (cores[i] === atual) {
-      contagem++;
-    } else {
-      if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
-      atual = cores[i];
-      contagem = 1;
-    }
-  }
-  if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
-
-  document.getElementById('sequencias').textContent = `Sequências: ${sequencias.join(', ')}`;
-    }
