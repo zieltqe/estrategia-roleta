@@ -1,10 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
   background-color: #f1f1f1;
   color: #333;
-  text-align: center;
-  padding: 20px;
   margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 500px;
+  width: 100%;
+  padding: 20px;
+  margin: 20px auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
 }
 
 h1 {
@@ -16,11 +34,15 @@ h1 {
 input[type="number"] {
   padding: 10px;
   font-size: 1rem;
-  width: 90%;
-  max-width: 200px;
+  width: 100%;
+  max-width: 300px;
   margin: 10px auto;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+.botoes {
+  margin-top: 10px;
 }
 
 button {
@@ -72,12 +94,15 @@ button:hover {
     font-size: 1.5em;
   }
 
+  input[type="number"],
   button {
-    width: 90%;
-    max-width: 250px;
+    width: 100%;
+    max-width: none;
   }
 
-  input[type="number"] {
-    width: 90%;
+  .botoes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 }
