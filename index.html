@@ -3,23 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Roleta Estratégica</title>
+  <title>Roleta Estratégica 2</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="roleta.jpg" />
 </head>
 <body>
-  <h1>Roleta Estratégica</h1>
-  <img src="roleta.jpg" alt="Roleta" class="roleta-img" />
+  <h1>Roleta Estratégica 2</h1>
 
-  <input type="number" id="numero" placeholder="Digite o número" />
+  <img src="roleta.jpg" alt="Roleta" class="roleta-img" style="width: 512px; display: block; margin: 0 auto;" />
+
+  <input type="number" id="numeroInput" placeholder="Digite o número" />
   <button onclick="registrarNumero()">Registrar</button>
-  <button onclick="limparHistorico()">Limpar Histórico</button>
+  <button onclick="limparDados()">Limpar Histórico</button>
 
-  <div id="historico"></div>
-  <div id="resultadoCores"></div>
+  <div id="resultado" style="margin-top: 20px; font-weight: bold;"></div>
+  <ul id="listaNumeros"></ul>
+  <div id="repetidos"></div>
 
-  <!-- Importando o script externo -->
   <script src="script.js"></script>
 </body>
 </html>
