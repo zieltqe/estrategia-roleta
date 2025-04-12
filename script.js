@@ -138,26 +138,4 @@ function mostrarSequencias() {
   if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
 
   document.getElementById('sequencias').textContent = `Sequências: ${sequencias.join(', ')}`;
-
-  // ADIÇÃO: detectar padrões alternados de cores
-  const padroes = {};
-  for (let i = 0; i <= cores.length - 4; i++) {
-    const padrao = cores.slice(i, i + 4).join('-');
-    padroes[padrao] = (padroes[padrao] || 0) + 1;
-  }
-
-  const padroesRepetidos = Object.entries(padroes)
-    .filter(([_, qtd]) => qtd >= 2)
-    .sort((a, b) => b[1] - a[1]);
-
-  if (padroesRepetidos.length) {
-    const lista = padroesRepetidos.map(([p, qtd]) => `${p} (${qtd}x)`).join(', ');
-    document.getElementById('sequencias').textContent += ` | Padrões: ${lista}`;
-    
-    const padraoAlvo = padroesRepetidos.find(([_, qtd]) => qtd >= 5);
-    if (padraoAlvo) {
-      const corFinal = padraoAlvo[0].split('-').pop();
-      document.getElementById('resultado').textContent = `PADRÃO FORTE DETECTADO: Apostar em ${corFinal.toUpperCase()} (Padrão ${padraoAlvo[0]} ocorreu ${padraoAlvo[1]}x)`;
-    }
-  }
-    }
+          }
