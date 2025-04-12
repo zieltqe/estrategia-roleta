@@ -1,8 +1,10 @@
 let numeros = [];
-let sinalAtivo = null;
+let sinal = null;
 let gale = 0;
-let invertido = false;
 let tentativasInvertidas = 0;
+let emInvertido = false;
+let corSequencia = null;
+let contagemSequencia = 0;
 
 function obterCor(numero) {
   if (numero === 0) return 'verde';
@@ -23,72 +25,78 @@ function registrarNumero() {
   atualizarLista();
   mostrarRepetidos();
   mostrarSequencias();
-  
-  aplicarEstrategia(); // <- Nova função chamada aqui
+  analisarSequencia();
 }
 
-function aplicarEstrategia() {
+function analisarSequencia() {
   const resultado = document.getElementById('resultado');
   const n = numeros.length;
   if (n < 4) return;
 
-  const corAtual = obterCor(numeros[n - 1]);
+  const ultimaCor = obterCor(numeros[n - 1]);
 
-  if (sinalAtivo) {
-    if (corAtual === sinalAtivo || corAtual === 'verde') {
-      resultado.textContent = `Vitória no ${sinalAtivo.toUpperCase()}!`;
-      resetarEstrategia();
+  if (sinal) {
+    if (ultimaCor === sinal.cor || ultimaCor === 'verde') {
+      resultado.textContent = `GANHOU no ${sinal.cor.toUpperCase()}!`;
+      resetarSinal();
     } else {
-      gale++;
-      if (!invertido && gale < 3) {
-        resultado.textContent = `Gale ${gale} ainda no ${sinalAtivo.toUpperCase()}`;
-      } else if (!invertido) {
-        // Inverte sinal
-        invertido = true;
-        gale = 1;
-        sinalAtivo = corAtual;
-        resultado.textContent = `Invertendo para ${sinalAtivo.toUpperCase()} - Tentativa 1`;
-      } else {
+      if (!emInvertido) {
         gale++;
-        if (gale <= 3) {
-          resultado.textContent = `Tentativa invertida ${gale} no ${sinalAtivo.toUpperCase()}`;
+        if (gale < 2) {
+          resultado.textContent = `Tentativa ${gale + 1} no ${sinal.cor.toUpperCase()}`;
         } else {
-          resultado.textContent = `Falhou após 2 gales + inversão. Resetando...`;
-          resetarEstrategia();
+          emInvertido = true;
+          tentativasInvertidas = 1;
+          sinal.cor = obterCor(numeros[n - 1]);
+          resultado.textContent = `Invertendo sinal para ${sinal.cor.toUpperCase()} - Tentativa 1`;
+        }
+      } else {
+        tentativasInvertidas++;
+        if (tentativasInvertidas < 4) {
+          resultado.textContent = `Tentativa ${tentativasInvertidas} no invertido: ${sinal.cor.toUpperCase()}`;
+        } else {
+          resultado.textContent = `PERDEU após todas as tentativas.`;
+          resetarSinal();
         }
       }
     }
     return;
   }
 
-  // Detecção da sequência
-  let baseCor = obterCor(numeros[n - 2]);
-  let contagem = 1;
-  for (let i = n - 3; i >= 0 && contagem < 30; i--) {
-    if (obterCor(numeros[i]) === baseCor) {
-      contagem++;
-    } else break;
+  corSequencia = obterCor(numeros[n - 2]);
+  contagemSequencia = 1;
+
+  for (let i = n - 3; i >= 0; i--) {
+    const cor = obterCor(numeros[i]);
+    if (cor === corSequencia) {
+      contagemSequencia++;
+    } else {
+      break;
+    }
   }
 
-  if (contagem >= 3 && corAtual !== baseCor) {
-    sinalAtivo = baseCor;
+  const corAtual = obterCor(numeros[n - 1]);
+  if (contagemSequencia >= 3 && contagemSequencia <= 30 && corAtual !== corSequencia) {
+    sinal = { cor: corSequencia };
     gale = 0;
-    invertido = false;
     tentativasInvertidas = 0;
-    resultado.textContent = `SINAL: Jogar ${sinalAtivo.toUpperCase()} (Sequência anterior de ${contagem})`;
+    emInvertido = false;
+    resultado.textContent = `SINAL DETECTADO: Jogar ${sinal.cor.toUpperCase()} (Gale 1)`;
   }
 }
 
-function resetarEstrategia() {
-  sinalAtivo = null;
+function resetarSinal() {
+  sinal = null;
   gale = 0;
-  invertido = false;
   tentativasInvertidas = 0;
+  emInvertido = false;
+  corSequencia = null;
+  contagemSequencia = 0;
 }
 
 function limparDados() {
   numeros = [];
-  resetarEstrategia();
+  resetarSinal();
   document.getElementById('resultado').textContent = '';
   document.getElementById('listaNumeros').innerHTML = '';
   document.getElementById('repetidos').textContent = '';
@@ -121,21 +129,25 @@ function mostrarRepetidos() {
 }
 
 function mostrarSequencias() {
-  const cores = numeros.map(obterCor);
-  let sequencias = [];
-  let atual = cores[0];
-  let contagem = 1;
-
-  for (let i = 1; i < cores.length; i++) {
-    if (cores[i] === atual) {
-      contagem++;
-    } else {
-      if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
-      atual = cores[i];
-      contagem = 1;
-    }
+  if (numeros.length < 3) {
+    document.getElementById('sequencias').textContent = 'Sequências: (mínimo 3 números)';
+    return;
   }
-  if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
 
-  document.getElementById('sequencias').textContent = `Sequências: ${sequencias.join(', ')}`;
-          }
+  const cores = numeros.map(obterCor);
+  const sequencias = {};
+  const tamanhoSequencia = 3; // você pode ajustar para 2, 4, etc.
+
+  for (let i = 0; i <= cores.length - tamanhoSequencia; i++) {
+    const seq = cores.slice(i, i + tamanhoSequencia).join(' → ');
+    sequencias[seq] = (sequencias[seq] || 0) + 1;
+  }
+
+  const resultadoSequencias = Object.entries(sequencias)
+    .sort((a, b) => b[1] - a[1])
+    .map(([seq, vezes]) => `${seq} - ${vezes} vez${vezes > 1 ? 'es' : ''}`)
+    .slice(0, 5) // mostra só as 5 mais frequentes
+    .join('<br>');
+
+  document.getElementById('sequencias').innerHTML = `Sequências mais comuns:<br>${resultadoSequencias}`;
+}
