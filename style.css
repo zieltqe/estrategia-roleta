@@ -1,40 +1,72 @@
 body {
   font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
   text-align: center;
-  background: #f4f4f4;
   margin: 0;
   padding: 20px;
 }
 
 h1 {
-  color: #333;
+  margin-bottom: 20px;
+  color: #2c3e50;
 }
 
 .roleta-img {
-  width: 100%;
-  max-width: 512px;
-  height: auto;
-  margin: 20px 0;
+  width: 512px;
+  max-width: 90%;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
-input, button {
+input[type="number"] {
   padding: 10px;
-  margin: 5px;
   font-size: 16px;
-  border-radius: 8px;
+  width: 200px;
+  margin: 10px;
   border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 button {
-  background-color: #4caf50;
-  color: white;
+  padding: 10px 20px;
+  margin: 5px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #27ae60;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #219150;
 }
 
-#resultadoCores, #historico {
+#resultado {
   margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#listaNumeros {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+#listaNumeros li {
+  display: inline-block;
+  margin: 5px;
+  padding: 8px 12px;
+  background-color: #ecf0f1;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+#repetidos {
+  margin-top: 20px;
+  font-style: italic;
+  color: #7f8c8d;
 }
