@@ -1,11 +1,9 @@
 let numeros = [];
-let sinal = null;
+let sinalAtivo = null;
 let gale = 0;
+let invertido = false;
 let tentativasInvertidas = 0;
-let emInvertido = false;
-let corSequencia = null;
-let contagemSequencia = 0;
-let sequenciasCores = [];
+let tentativas = 0;  // Nova variável para contar tentativas
 
 function obterCor(numero) {
   if (numero === 0) return 'verde';
@@ -13,7 +11,6 @@ function obterCor(numero) {
   return vermelhos.includes(numero) ? 'vermelho' : 'preto';
 }
 
-// Função para registrar o número
 function registrarNumero() {
   const input = document.getElementById('numeroInput');
   const numero = parseInt(input.value);
@@ -27,100 +24,81 @@ function registrarNumero() {
   atualizarLista();
   mostrarRepetidos();
   mostrarSequencias();
-  analisarSequencia();
+  
+  aplicarEstrategia(); // <- Nova função chamada aqui
 }
 
-// Função para analisar a sequência de cores mais repetidas
-function analisarSequencia() {
+function aplicarEstrategia() {
   const resultado = document.getElementById('resultado');
   const n = numeros.length;
-  if (n < 4) return;
+  if (n < 5) return; // A estratégia só aplica quando há 5 ou mais números registrados
 
-  // Obtém as cores associadas aos números
-  const cores = numeros.map(obterCor);
+  const corAtual = obterCor(numeros[n - 1]);
 
-  // Encontrar a sequência de cores mais repetidas
-  sequenciasCores = encontrarSequenciasMaisFrequentes(cores);
-
-  // Se houver uma sequência mais repetida, o sinal será dado com base nela
-  if (sequenciasCores.length > 0) {
-    const corMaisFrequente = sequenciasCores[0].cor; // A cor mais frequente
-    if (sinal && sinal.cor === corMaisFrequente) {
-      // Se o sinal já estiver definido para a cor mais frequente, verifica se ganhou
-      const ultimaCor = obterCor(numeros[n - 1]);
-      if (ultimaCor === sinal.cor || ultimaCor === 'verde') {
-        resultado.textContent = `GANHOU no ${sinal.cor.toUpperCase()}!`;
-        resetarSinal();
+  if (sinalAtivo) {
+    if (corAtual === sinalAtivo || corAtual === 'verde') {
+      resultado.textContent = `Vitória no ${sinalAtivo.toUpperCase()}!`;
+      resetarEstrategia();
+    } else {
+      gale++;
+      if (!invertido && gale < 3) {
+        resultado.textContent = `Gale ${gale} ainda no ${sinalAtivo.toUpperCase()}`;
+      } else if (!invertido) {
+        // Inverte sinal
+        invertido = true;
+        gale = 1;
+        sinalAtivo = corAtual;
+        resultado.textContent = `Invertendo para ${sinalAtivo.toUpperCase()} - Tentativa 1`;
       } else {
-        if (!emInvertido) {
-          gale++;
-          if (gale < 3) {
-            resultado.textContent = `Tentativa ${gale + 1} no ${sinal.cor.toUpperCase()}`;
-          } else {
-            emInvertido = true;
-            tentativasInvertidas = 1;
-            resultado.textContent = `Invertendo sinal para ${obterCor(numeros[n - 1]).toUpperCase()} - Tentativa 1`;
-          }
+        gale++;
+        if (gale <= 3) {
+          resultado.textContent = `Tentativa invertida ${gale} no ${sinalAtivo.toUpperCase()}`;
         } else {
-          tentativasInvertidas++;
-          if (tentativasInvertidas < 3) {
-            resultado.textContent = `Tentativa ${tentativasInvertidas} no invertido: ${sinal.cor.toUpperCase()}`;
-          } else {
-            resultado.textContent = `PERDEU após todas as tentativas.`;
-            resetarSinal();
-          }
+          resultado.textContent = `Falhou após 2 gales + inversão. Resetando...`;
+          resetarEstrategia();
         }
       }
-    } else {
-      // Define o sinal com a cor mais frequente
-      sinal = { cor: corMaisFrequente };
-      gale = 0;
-      tentativasInvertidas = 0;
-      emInvertido = false;
-      resultado.textContent = `SINAL DETECTADO: Jogar ${sinal.cor.toUpperCase()} (Gale 1)`;
     }
     return;
   }
-}
 
-// Função para encontrar as sequências de cores mais frequentes
-function encontrarSequenciasMaisFrequentes(cores) {
-  const sequencias = [];
-  for (let i = 0; i < cores.length - 2; i++) {
-    const sequencia = [cores[i], cores[i + 1], cores[i + 2]]; // Considera sequências de 3 cores
-    const indice = sequencias.findIndex(seq => seq.cor.join() === sequencia.join());
-    if (indice === -1) {
-      sequencias.push({ cor: sequencia, qtd: 1 });
-    } else {
-      sequencias[indice].qtd++;
-    }
+  // Detecção de sequência de cores
+  let baseCor = obterCor(numeros[n - 2]);
+  let contagem = 1;
+  for (let i = n - 3; i >= 0 && contagem < 30; i--) {
+    if (obterCor(numeros[i]) === baseCor) {
+      contagem++;
+    } else break;
   }
 
-  return sequencias.sort((a, b) => b.qtd - a.qtd); // Ordena pela quantidade de repetições
+  // Se houver sequência repetida de 5 ou mais vezes, define o sinal
+  if (contagem >= 5 && corAtual !== baseCor) {
+    sinalAtivo = baseCor;
+    gale = 0;
+    invertido = false;
+    tentativasInvertidas = 0;
+    tentativas = 0; // Reinicia as tentativas
+    resultado.textContent = `SINAL: Jogar ${sinalAtivo.toUpperCase()} (Sequência anterior de ${contagem})`;
+  }
 }
 
-// Função para resetar o sinal
-function resetarSinal() {
-  sinal = null;
+function resetarEstrategia() {
+  sinalAtivo = null;
   gale = 0;
+  invertido = false;
   tentativasInvertidas = 0;
-  emInvertido = false;
-  corSequencia = null;
-  contagemSequencia = 0;
+  tentativas = 0;  // Resetar tentativas
 }
 
-// Função para limpar os dados
 function limparDados() {
   numeros = [];
-  sequenciasCores = [];
-  resetarSinal();
+  resetarEstrategia();
   document.getElementById('resultado').textContent = '';
   document.getElementById('listaNumeros').innerHTML = '';
   document.getElementById('repetidos').textContent = '';
   document.getElementById('sequencias').textContent = '';
 }
 
-// Função para atualizar a lista de números
 function atualizarLista() {
   const ul = document.getElementById('listaNumeros');
   ul.innerHTML = '';
@@ -133,7 +111,6 @@ function atualizarLista() {
   });
 }
 
-// Função para mostrar os números mais repetidos
 function mostrarRepetidos() {
   const contagem = {};
   numeros.forEach(num => contagem[num] = (contagem[num] || 0) + 1);
@@ -147,10 +124,53 @@ function mostrarRepetidos() {
   document.getElementById('repetidos').textContent = `Mais saíram: ${repetidos}`;
 }
 
-// Função para mostrar as sequências
 function mostrarSequencias() {
   const cores = numeros.map(obterCor);
-  const sequencias = encontrarSequenciasMaisFrequentes(cores);
-  
-  document.getElementById('sequencias').textContent = `Sequências mais frequentes: ${sequencias.map(s => `${s.cor.join(', ')} (${s.qtd}x)`).join(', ')}`;
+  let sequencias = [];
+  let atual = cores[0];
+  let contagem = 1;
+
+  for (let i = 1; i < cores.length; i++) {
+    if (cores[i] === atual) {
+      contagem++;
+    } else {
+      if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
+      atual = cores[i];
+      contagem = 1;
+    }
+  }
+  if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
+
+  document.getElementById('sequencias').textContent = `Sequências: ${sequencias.join(', ')}`;
 }
+
+// Função para fazer as tentativas
+function fazerTentativa() {
+  const resultado = document.getElementById('resultado');
+  const ultimaCor = obterCor(numeros[numeros.length - 1]); // Cor do último número registrado
+
+  if (sinalAtivo === null) {
+    resultado.textContent = "Nenhum sinal detectado!";
+    return;
+  }
+
+  if (tentativas < 3) {
+    // Incrementa a tentativa
+    tentativas++;
+
+    // Se acertar, avisa que ganhou
+    if (ultimaCor === sinalAtivo || ultimaCor === 'verde') {
+      resultado.textContent = `GANHOU no ${sinalAtivo.toUpperCase()}!`;
+      resetarEstrategia();
+    } else {
+      // Se ainda houver tentativas
+      if (tentativas < 3) {
+        resultado.textContent = `Tentativa ${tentativas + 1} no ${sinalAtivo.toUpperCase()}`;
+      } else {
+        // Se todas as tentativas foram usadas, avisa que perdeu
+        resultado.textContent = `PERDEU após todas as tentativas.`;
+        resetarEstrategia();
+      }
+    }
+  }
+            }
