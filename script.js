@@ -3,7 +3,7 @@ let sinalAtivo = null;
 let gale = 0;
 let invertido = false;
 let tentativasInvertidas = 0;
-let padroes = [];  // Vai armazenar os padrões de cores detectados
+let sequencias = [];  // Para armazenar os padrões de cores
 
 function obterCor(numero) {
   if (numero === 0) return 'verde';
@@ -22,70 +22,35 @@ function registrarNumero() {
   if (numeros.length > 100) numeros.shift();
 
   atualizarLista();
-  mostrarRepetidos();
   mostrarSequencias();
-  
-  aplicarEstrategia(); // <- Nova função chamada aqui
+  aplicarEstrategia();
 }
 
 function aplicarEstrategia() {
   const resultado = document.getElementById('resultado');
   const n = numeros.length;
-  if (n < 4) return;
+  if (n < 2) return;
 
   const corAtual = obterCor(numeros[n - 1]);
+  const corAnterior = obterCor(numeros[n - 2]);
 
-  if (sinalAtivo) {
-    if (corAtual === sinalAtivo || corAtual === 'verde') {
-      resultado.textContent = `Vitória no ${sinalAtivo.toUpperCase()}!`;
-      resetarEstrategia();
-    } else {
-      gale++;
-      if (!invertido && gale < 3) {
-        resultado.textContent = `Gale ${gale} ainda no ${sinalAtivo.toUpperCase()}`;
-      } else if (!invertido) {
-        // Inverte sinal
-        invertido = true;
-        gale = 1;
-        sinalAtivo = corAtual;
-        resultado.textContent = `Invertendo para ${sinalAtivo.toUpperCase()} - Tentativa 1`;
-      } else {
-        gale++;
-        if (gale <= 3) {
-          resultado.textContent = `Tentativa invertida ${gale} no ${sinalAtivo.toUpperCase()}`;
-        } else {
-          resultado.textContent = `Falhou após 2 gales + inversão. Resetando...`;
-          resetarEstrategia();
-        }
-      }
-    }
-    return;
-  }
+  // Criar uma sequência de 2 cores
+  const padrao = `${corAnterior}, ${corAtual}`;
 
-  // Verificação do padrão de cores
-  const cores = numeros.map(obterCor);
-  const ultimoPadrao = cores.slice(-4); // Últimos 4 resultados de cores
+  // Registrar o padrão
+  sequencias.push(padrao);
+  if (sequencias.length > 100) sequencias.shift();  // Limitar a quantidade de padrões registrados
 
-  if (ultimoPadrao.length < 2) return; // Precisamos de pelo menos 2 elementos para comparar um padrão
+  // Contabilizar quantas vezes o padrão aparece
+  const contagemPadrao = sequencias.filter(p => p === padrao).length;
 
-  // Verificar se o padrão já existe no array de padrões
-  const padrao = ultimoPadrao.join(',');
-  padroes.push(padrao);
-
-  // Contabilizar quantas vezes o padrão aparece nos últimos 5 resultados
-  const contagemPadrao = padroes.filter(p => p === padrao).length;
-
-  // Se o padrão se repetir 5 vezes ou mais
   if (contagemPadrao >= 5) {
-    sinalAtivo = obterCor(numeros[n - 1]);
+    sinalAtivo = corAtual;
     gale = 0;
     invertido = false;
     tentativasInvertidas = 0;
     resultado.textContent = `SINAL: Jogar ${sinalAtivo.toUpperCase()} (Padrão ${padrao} se repetiu ${contagemPadrao}x)`;
   }
-
-  // Mostrar os padrões registrados
-  document.getElementById('padroes').textContent = `Padrões registrados: ${padroes.join(' | ')}`;
 }
 
 function resetarEstrategia() {
@@ -93,7 +58,7 @@ function resetarEstrategia() {
   gale = 0;
   invertido = false;
   tentativasInvertidas = 0;
-  padroes = [];  // Resetando os padrões quando a estratégia é resetada
+  sequencias = [];  // Resetando os padrões
 }
 
 function limparDados() {
@@ -101,9 +66,7 @@ function limparDados() {
   resetarEstrategia();
   document.getElementById('resultado').textContent = '';
   document.getElementById('listaNumeros').innerHTML = '';
-  document.getElementById('repetidos').textContent = '';
   document.getElementById('sequencias').textContent = '';
-  document.getElementById('padroes').textContent = '';  // Limpar a exibição dos padrões
 }
 
 function atualizarLista() {
@@ -118,35 +81,23 @@ function atualizarLista() {
   });
 }
 
-function mostrarRepetidos() {
-  const contagem = {};
-  numeros.forEach(num => contagem[num] = (contagem[num] || 0) + 1);
-
-  const repetidos = Object.entries(contagem)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([num, qtd]) => `${num} (${qtd}x)`)
-    .join(', ');
-
-  document.getElementById('repetidos').textContent = `Mais saíram: ${repetidos}`;
-}
-
 function mostrarSequencias() {
   const cores = numeros.map(obterCor);
-  let sequencias = [];
+  let sequenciasMostradas = [];
   let atual = cores[0];
   let contagem = 1;
 
+  // Detectando padrões de sequências
   for (let i = 1; i < cores.length; i++) {
     if (cores[i] === atual) {
       contagem++;
     } else {
-      if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
+      if (contagem >= 2) sequenciasMostradas.push(`${atual} (${contagem}x)`);
       atual = cores[i];
       contagem = 1;
     }
   }
-  if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
+  if (contagem >= 2) sequenciasMostradas.push(`${atual} (${contagem}x)`);
 
-  document.getElementById('sequencias').textContent = `Sequências: ${sequencias.join(', ')}`;
-    }
+  document.getElementById('sequencias').textContent = `Sequências: ${sequenciasMostradas.join(', ')}`;
+}
