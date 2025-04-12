@@ -3,11 +3,10 @@ let sinalAtivo = null;
 let gale = 0;
 let invertido = false;
 let tentativasInvertidas = 0;
-let sequenciasDetectadas = [];  // Para armazenar os padrões de cores
 
 function obterCor(numero) {
   if (numero === 0) return 'verde';
-  const vermelhos = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+  const vermelhos = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
   return vermelhos.includes(numero) ? 'vermelho' : 'preto';
 }
 
@@ -22,34 +21,61 @@ function registrarNumero() {
   if (numeros.length > 100) numeros.shift();
 
   atualizarLista();
-  detectarSequencias();
-  aplicarEstrategia();
+  mostrarRepetidos();
+  mostrarSequencias();
+  
+  aplicarEstrategia(); // <- Nova função chamada aqui
 }
 
 function aplicarEstrategia() {
   const resultado = document.getElementById('resultado');
   const n = numeros.length;
-  if (n < 2) return;
+  if (n < 4) return;
 
   const corAtual = obterCor(numeros[n - 1]);
-  const corAnterior = obterCor(numeros[n - 2]);
 
-  // Criar uma sequência de 2 cores
-  const padrao = `${corAnterior}, ${corAtual}`;
+  if (sinalAtivo) {
+    if (corAtual === sinalAtivo || corAtual === 'verde') {
+      resultado.textContent = `Vitória no ${sinalAtivo.toUpperCase()}!`;
+      resetarEstrategia();
+    } else {
+      gale++;
+      if (!invertido && gale < 3) {
+        resultado.textContent = `Gale ${gale} ainda no ${sinalAtivo.toUpperCase()}`;
+      } else if (!invertido) {
+        // Inverte sinal
+        invertido = true;
+        gale = 1;
+        sinalAtivo = corAtual;
+        resultado.textContent = `Invertendo para ${sinalAtivo.toUpperCase()} - Tentativa 1`;
+      } else {
+        gale++;
+        if (gale <= 3) {
+          resultado.textContent = `Tentativa invertida ${gale} no ${sinalAtivo.toUpperCase()}`;
+        } else {
+          resultado.textContent = `Falhou após 2 gales + inversão. Resetando...`;
+          resetarEstrategia();
+        }
+      }
+    }
+    return;
+  }
 
-  // Registrar o padrão
-  sequenciasDetectadas.push(padrao);
-  if (sequenciasDetectadas.length > 100) sequenciasDetectadas.shift();  // Limitar a quantidade de padrões registrados
+  // Detecção da sequência
+  let baseCor = obterCor(numeros[n - 2]);
+  let contagem = 1;
+  for (let i = n - 3; i >= 0 && contagem < 30; i--) {
+    if (obterCor(numeros[i]) === baseCor) {
+      contagem++;
+    } else break;
+  }
 
-  // Contabilizar quantas vezes o padrão aparece
-  const contagemPadrao = sequenciasDetectadas.filter(p => p === padrao).length;
-
-  if (contagemPadrao >= 5) {
-    sinalAtivo = corAtual;
+  if (contagem >= 3 && corAtual !== baseCor) {
+    sinalAtivo = baseCor;
     gale = 0;
     invertido = false;
     tentativasInvertidas = 0;
-    resultado.textContent = `SINAL: Jogar ${sinalAtivo.toUpperCase()} (Padrão ${padrao} se repetiu ${contagemPadrao}x)`;
+    resultado.textContent = `SINAL: Jogar ${sinalAtivo.toUpperCase()} (Sequência anterior de ${contagem})`;
   }
 }
 
@@ -58,7 +84,6 @@ function resetarEstrategia() {
   gale = 0;
   invertido = false;
   tentativasInvertidas = 0;
-  sequenciasDetectadas = [];  // Resetando os padrões
 }
 
 function limparDados() {
@@ -66,6 +91,7 @@ function limparDados() {
   resetarEstrategia();
   document.getElementById('resultado').textContent = '';
   document.getElementById('listaNumeros').innerHTML = '';
+  document.getElementById('repetidos').textContent = '';
   document.getElementById('sequencias').textContent = '';
 }
 
@@ -81,29 +107,57 @@ function atualizarLista() {
   });
 }
 
-function detectarSequencias() {
-  const cores = numeros.map(obterCor);
-  let sequencias = [];
-  
-  // Identificando padrões de sequência
-  for (let i = 1; i < cores.length; i++) {
-    for (let j = i + 1; j < cores.length; j++) {
-      let padrao = cores.slice(i, j + 1).join(', ');
-      sequencias.push(padrao);
-    }
-  }
+function mostrarRepetidos() {
+  const contagem = {};
+  numeros.forEach(num => contagem[num] = (contagem[num] || 0) + 1);
 
-  // Contabilizando e mostrando os padrões
-  const contagemSequencias = {};
-  sequencias.forEach(padrao => {
-    contagemSequencias[padrao] = (contagemSequencias[padrao] || 0) + 1;
-  });
-
-  // Encontrar e exibir os padrões mais repetidos
-  const sequenciasMaisComuns = Object.entries(contagemSequencias)
-    .filter(([padrao, count]) => count >= 5)
-    .map(([padrao, count]) => `${padrao} (${count}x)`)
+  const repetidos = Object.entries(contagem)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([num, qtd]) => `${num} (${qtd}x)`)
     .join(', ');
 
-  document.getElementById('sequencias').textContent = `Sequências detectadas: ${sequenciasMaisComuns}`;
+  document.getElementById('repetidos').textContent = `Mais saíram: ${repetidos}`;
+}
+
+function mostrarSequencias() {
+  const cores = numeros.map(obterCor);
+  let sequencias = [];
+  let atual = cores[0];
+  let contagem = 1;
+
+  for (let i = 1; i < cores.length; i++) {
+    if (cores[i] === atual) {
+      contagem++;
+    } else {
+      if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
+      atual = cores[i];
+      contagem = 1;
+    }
+  }
+  if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
+
+  document.getElementById('sequencias').textContent = `Sequências: ${sequencias.join(', ')}`;
+
+  // ADIÇÃO: detectar padrões alternados de cores
+  const padroes = {};
+  for (let i = 0; i <= cores.length - 4; i++) {
+    const padrao = cores.slice(i, i + 4).join('-');
+    padroes[padrao] = (padroes[padrao] || 0) + 1;
+  }
+
+  const padroesRepetidos = Object.entries(padroes)
+    .filter(([_, qtd]) => qtd >= 2)
+    .sort((a, b) => b[1] - a[1]);
+
+  if (padroesRepetidos.length) {
+    const lista = padroesRepetidos.map(([p, qtd]) => `${p} (${qtd}x)`).join(', ');
+    document.getElementById('sequencias').textContent += ` | Padrões: ${lista}`;
+    
+    const padraoAlvo = padroesRepetidos.find(([_, qtd]) => qtd >= 5);
+    if (padraoAlvo) {
+      const corFinal = padraoAlvo[0].split('-').pop();
+      document.getElementById('resultado').textContent = `PADRÃO FORTE DETECTADO: Apostar em ${corFinal.toUpperCase()} (Padrão ${padraoAlvo[0]} ocorreu ${padraoAlvo[1]}x)`;
+    }
+  }
     }
