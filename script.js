@@ -42,7 +42,7 @@ function analisarSequencia() {
     } else {
       if (!emInvertido) {
         gale++;
-        if (gale < 2) {
+        if (gale < 3) {
           resultado.textContent = `Tentativa ${gale + 1} no ${sinal.cor.toUpperCase()}`;
         } else {
           emInvertido = true;
