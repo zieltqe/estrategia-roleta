@@ -1,8 +1,9 @@
 let numeros = [];
-let corAnterior = '';
+let corSequencia = '';
+let contagemSequencia = 0;
+let sinalAtual = '';
 let gale = 0;
 let tentativaInvertida = 0;
-let corAtualSinal = '';
 let modoInvertido = false;
 
 function registrarNumero() {
@@ -27,61 +28,90 @@ function obterCor(numero) {
 }
 
 function analisarSequencia() {
-  if (numeros.length < 3) return;
+  const resultado = document.getElementById('resultado');
+  if (numeros.length < 2) return;
 
-  const cor1 = obterCor(numeros[numeros.length - 1]);
-  const cor2 = obterCor(numeros[numeros.length - 2]);
+  let ultimaCor = '';
+  let novaCor = '';
+  
+  for (let i = numeros.length - 1; i >= 0; i--) {
+    let cor = obterCor(numeros[i]);
+    if (cor === 'verde') continue;
+
+    if (!corSequencia) {
+      corSequencia = cor;
+      contagemSequencia = 1;
+    } else if (cor === corSequencia) {
+      contagemSequencia++;
+    } else {
+      // Se quebra de sequência e já tem no mínimo 3 da mesma cor
+      if (contagemSequencia >= 3 && contagemSequencia <= 30) {
+        if (!sinalAtual) {
+          sinalAtual = corSequencia;
+          gale = 0;
+          modoInvertido = false;
+          resultado.textContent = `Sinal: Jogar ${sinalAtual.toUpperCase()} (Gale 1)`;
+        } else {
+          aplicarSinal(cor);
+        }
+      }
+      // Reiniciar sequência com nova cor
+      corSequencia = cor;
+      contagemSequencia = 1;
+    }
+  }
+}
+
+function aplicarSinal(ultimaCor) {
   const resultado = document.getElementById('resultado');
 
-  if (!modoInvertido && cor1 === cor2) {
-    corAtualSinal = cor1;
-    gale = 0;
-    resultado.textContent = `Sinal confirmado: jogar ${corAtualSinal.toUpperCase()} (Gale 1)`;
+  if (obterCor(numeros[numeros.length - 1]) === 'verde') {
+    resultado.textContent = `Zero saiu. Continuar jogando ${sinalAtual.toUpperCase()} (Gale ${gale + 1})`;
     return;
   }
 
-  if (!modoInvertido && corAtualSinal) {
-    if (cor1 === corAtualSinal) {
-      resultado.textContent = `GANHOU no ${corAtualSinal.toUpperCase()}!`;
-      corAtualSinal = '';
+  if (!modoInvertido) {
+    if (ultimaCor === sinalAtual) {
+      resultado.textContent = `GANHOU no ${sinalAtual.toUpperCase()}!`;
+      resetarSinal();
     } else {
       gale++;
       if (gale < 3) {
-        resultado.textContent = `Tentar novamente: ${corAtualSinal.toUpperCase()} (Gale ${gale + 1})`;
+        resultado.textContent = `Tentar novamente: ${sinalAtual.toUpperCase()} (Gale ${gale + 1})`;
       } else {
         modoInvertido = true;
         tentativaInvertida = 1;
-        resultado.textContent = `Invertendo sinal: jogar ${cor1.toUpperCase()} (Gale 1)`;
+        resultado.textContent = `Invertendo sinal: Jogar ${ultimaCor.toUpperCase()} (Gale 1)`;
       }
     }
-    return;
-  }
-
-  if (modoInvertido) {
-    if (cor1 === cor2) {
-      resultado.textContent = `GANHOU no sinal invertido (${cor1.toUpperCase()})!`;
-      modoInvertido = false;
-      corAtualSinal = '';
+  } else {
+    if (ultimaCor === obterCor(numeros[numeros.length - 1])) {
+      resultado.textContent = `GANHOU no sinal invertido (${ultimaCor.toUpperCase()})!`;
+      resetarSinal();
     } else {
       tentativaInvertida++;
       if (tentativaInvertida < 3) {
-        resultado.textContent = `Tentativa ${tentativaInvertida + 1} no sinal invertido: ${cor1.toUpperCase()}`;
+        resultado.textContent = `Tentativa ${tentativaInvertida + 1} no invertido: ${ultimaCor.toUpperCase()}`;
       } else {
-        resultado.textContent = `PERDEU após todas as tentativas!`;
-        modoInvertido = false;
-        corAtualSinal = '';
+        resultado.textContent = `PERDEU após todas as tentativas.`;
+        resetarSinal();
       }
     }
   }
 }
 
-function limparDados() {
-  numeros = [];
-  corAnterior = '';
+function resetarSinal() {
+  sinalAtual = '';
   gale = 0;
   tentativaInvertida = 0;
-  corAtualSinal = '';
   modoInvertido = false;
+  corSequencia = '';
+  contagemSequencia = 0;
+}
+
+function limparDados() {
+  numeros = [];
+  resetarSinal();
   document.getElementById('resultado').textContent = '';
   document.getElementById('listaNumeros').innerHTML = '';
   document.getElementById('repetidos').textContent = '';
