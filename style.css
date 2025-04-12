@@ -1,26 +1,33 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f1f1f1;
-  color: #333;
-  text-align: center;
-  padding: 20px;
+  background-color: #fafafa;
   margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
 }
 
 h1 {
-  font-size: 2em;
   color: #2c3e50;
-  margin-bottom: 20px;
 }
 
 input[type="number"] {
   padding: 10px;
   font-size: 1rem;
-  width: 90%;
-  max-width: 200px;
+  width: 80%;
+  max-width: 250px;
   margin: 10px auto;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 8px;
+}
+
+.botoes {
+  margin: 10px 0;
 }
 
 button {
@@ -30,7 +37,7 @@ button {
   background-color: #27ae60;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
@@ -39,7 +46,7 @@ button:hover {
 }
 
 #resultado {
-  margin-top: 20px;
+  margin-top: 15px;
   font-weight: bold;
   font-size: 1.1rem;
 }
@@ -47,24 +54,17 @@ button:hover {
 #listaNumeros {
   list-style: none;
   padding: 0;
-  margin-top: 20px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 #listaNumeros li {
-  margin: 5px;
-  padding: 8px 12px;
+  margin: 4px;
+  padding: 6px 10px;
   border-radius: 5px;
   font-weight: bold;
-  color: white;
-}
-
-#repetidos, #sequenciasMaisRepetidas {
-  margin-top: 20px;
-  color: #7f8c8d;
-  font-style: italic;
+  color: #fff;
 }
 
 .vermelho {
@@ -79,17 +79,8 @@ button:hover {
   background-color: #27ae60;
 }
 
-@media (max-width: 480px) {
-  h1 {
-    font-size: 1.5em;
-  }
-
-  button {
-    width: 90%;
-    max-width: 250px;
-  }
-
-  input[type="number"] {
-    width: 90%;
-  }
+#repetidos, #sequencias {
+  margin-top: 10px;
+  font-style: italic;
+  color: #555;
 }
