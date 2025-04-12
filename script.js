@@ -130,7 +130,7 @@ function mostrarRepetidos() {
 
 function mostrarSequencias() {
   const cores = numeros.map(obterCor);
-  let sequencias = [];
+  let sequencias = {};
   let atual = cores[0];
   let contagem = 1;
 
@@ -138,12 +138,23 @@ function mostrarSequencias() {
     if (cores[i] === atual) {
       contagem++;
     } else {
-      if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
+      if (contagem >= 2) {
+        const chave = `${atual} (${contagem}x)`;
+        sequencias[chave] = (sequencias[chave] || 0) + 1;
+      }
       atual = cores[i];
       contagem = 1;
     }
   }
-  if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
 
-  document.getElementById('sequencias').textContent = `Sequências: ${sequencias.join(', ')}`;
-    }
+  if (contagem >= 2) {
+    const chave = `${atual} (${contagem}x)`;
+    sequencias[chave] = (sequencias[chave] || 0) + 1;
+  }
+
+  const resultadoSequencias = Object.entries(sequencias)
+    .map(([sequencia, vezes]) => `${sequencia} - ${vezes} vez${vezes > 1 ? 'es' : ''}`)
+    .join(', ');
+
+  document.getElementById('sequencias').textContent = `Sequências: ${resultadoSequencias}`;
+}
