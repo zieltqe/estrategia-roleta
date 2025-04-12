@@ -31,7 +31,6 @@ function analisarSequencia() {
 
   const cor1 = obterCor(numeros[numeros.length - 1]);
   const cor2 = obterCor(numeros[numeros.length - 2]);
-
   const resultado = document.getElementById('resultado');
 
   if (!modoInvertido && cor1 === cor2) {
@@ -109,4 +108,4 @@ function mostrarRepetidos() {
     .join(', ');
 
   document.getElementById('repetidos').textContent = `Mais saíram: ${repetidos}`;
-      }
+}
