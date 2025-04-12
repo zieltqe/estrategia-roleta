@@ -7,7 +7,7 @@ let padroes = [];  // Vai armazenar os padrões de cores detectados
 
 function obterCor(numero) {
   if (numero === 0) return 'verde';
-  const vermelhos = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+  const vermelhos = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
   return vermelhos.includes(numero) ? 'vermelho' : 'preto';
 }
 
@@ -83,6 +83,9 @@ function aplicarEstrategia() {
     tentativasInvertidas = 0;
     resultado.textContent = `SINAL: Jogar ${sinalAtivo.toUpperCase()} (Padrão ${padrao} se repetiu ${contagemPadrao}x)`;
   }
+
+  // Mostrar os padrões registrados
+  document.getElementById('padroes').textContent = `Padrões registrados: ${padroes.join(' | ')}`;
 }
 
 function resetarEstrategia() {
@@ -100,6 +103,7 @@ function limparDados() {
   document.getElementById('listaNumeros').innerHTML = '';
   document.getElementById('repetidos').textContent = '';
   document.getElementById('sequencias').textContent = '';
+  document.getElementById('padroes').textContent = '';  // Limpar a exibição dos padrões
 }
 
 function atualizarLista() {
@@ -145,4 +149,4 @@ function mostrarSequencias() {
   if (contagem >= 2) sequencias.push(`${atual} (${contagem}x)`);
 
   document.getElementById('sequencias').textContent = `Sequências: ${sequencias.join(', ')}`;
-}
+    }
