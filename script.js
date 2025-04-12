@@ -42,7 +42,7 @@ function analisarSequencia() {
     } else {
       if (!emInvertido) {
         gale++;
-        if (gale < 2) {
+        if (gale < 3) {
           resultado.textContent = `Tentativa ${gale + 1} no ${sinal.cor.toUpperCase()}`;
         } else {
           emInvertido = true;
@@ -136,7 +136,7 @@ function mostrarSequencias() {
 
   const cores = numeros.map(obterCor);
   const sequencias = {};
-  const tamanhoSequencia = 3; // você pode ajustar para 2, 4, etc.
+  const tamanhoSequencia = 2; // você pode ajustar para 2, 4, etc.
 
   for (let i = 0; i <= cores.length - tamanhoSequencia; i++) {
     const seq = cores.slice(i, i + tamanhoSequencia).join(' → ');
