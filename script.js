@@ -13,6 +13,7 @@ function obterCor(numero) {
   return vermelhos.includes(numero) ? 'vermelho' : 'preto';
 }
 
+// Função para registrar o número
 function registrarNumero() {
   const input = document.getElementById('numeroInput');
   const numero = parseInt(input.value);
@@ -29,18 +30,24 @@ function registrarNumero() {
   analisarSequencia();
 }
 
+// Função para analisar a sequência de cores mais repetidas
 function analisarSequencia() {
   const resultado = document.getElementById('resultado');
   const n = numeros.length;
   if (n < 4) return;
 
-  const ultimaCor = obterCor(numeros[n - 1]);
+  // Obtém as cores associadas aos números
+  const cores = numeros.map(obterCor);
 
-  // Verifica o sinal baseado na sequência de cores mais frequentes
+  // Encontrar a sequência de cores mais repetidas
+  sequenciasCores = encontrarSequenciasMaisFrequentes(cores);
+
+  // Se houver uma sequência mais repetida, o sinal será dado com base nela
   if (sequenciasCores.length > 0) {
-    const corMaisFrequente = sequenciasCores[0].cor; // A cor mais frequente da sequência
+    const corMaisFrequente = sequenciasCores[0].cor; // A cor mais frequente
     if (sinal && sinal.cor === corMaisFrequente) {
-      // Se a sequência estiver correta, o jogador ganha
+      // Se o sinal já estiver definido para a cor mais frequente, verifica se ganhou
+      const ultimaCor = obterCor(numeros[n - 1]);
       if (ultimaCor === sinal.cor || ultimaCor === 'verde') {
         resultado.textContent = `GANHOU no ${sinal.cor.toUpperCase()}!`;
         resetarSinal();
@@ -74,20 +81,25 @@ function analisarSequencia() {
     }
     return;
   }
-
-  corSequencia = obterCor(numeros[n - 2]);
-  contagemSequencia = 1;
-
-  for (let i = n - 3; i >= 0; i--) {
-    const cor = obterCor(numeros[i]);
-    if (cor === corSequencia) {
-      contagemSequencia++;
-    } else {
-      break;
-    }
-  }
 }
 
+// Função para encontrar as sequências de cores mais frequentes
+function encontrarSequenciasMaisFrequentes(cores) {
+  const sequencias = [];
+  for (let i = 0; i < cores.length - 2; i++) {
+    const sequencia = [cores[i], cores[i + 1], cores[i + 2]]; // Considera sequências de 3 cores
+    const indice = sequencias.findIndex(seq => seq.cor.join() === sequencia.join());
+    if (indice === -1) {
+      sequencias.push({ cor: sequencia, qtd: 1 });
+    } else {
+      sequencias[indice].qtd++;
+    }
+  }
+
+  return sequencias.sort((a, b) => b.qtd - a.qtd); // Ordena pela quantidade de repetições
+}
+
+// Função para resetar o sinal
 function resetarSinal() {
   sinal = null;
   gale = 0;
@@ -97,6 +109,7 @@ function resetarSinal() {
   contagemSequencia = 0;
 }
 
+// Função para limpar os dados
 function limparDados() {
   numeros = [];
   sequenciasCores = [];
@@ -107,6 +120,7 @@ function limparDados() {
   document.getElementById('sequencias').textContent = '';
 }
 
+// Função para atualizar a lista de números
 function atualizarLista() {
   const ul = document.getElementById('listaNumeros');
   ul.innerHTML = '';
@@ -119,6 +133,7 @@ function atualizarLista() {
   });
 }
 
+// Função para mostrar os números mais repetidos
 function mostrarRepetidos() {
   const contagem = {};
   numeros.forEach(num => contagem[num] = (contagem[num] || 0) + 1);
@@ -132,24 +147,10 @@ function mostrarRepetidos() {
   document.getElementById('repetidos').textContent = `Mais saíram: ${repetidos}`;
 }
 
+// Função para mostrar as sequências
 function mostrarSequencias() {
   const cores = numeros.map(obterCor);
-  let sequencias = [];
-  let atual = cores[0];
-  let contagem = 1;
-
-  for (let i = 1; i < cores.length; i++) {
-    if (cores[i] === atual) {
-      contagem++;
-    } else {
-      if (contagem >= 2) sequencias.push({ cor: atual, qtd: contagem });
-      atual = cores[i];
-      contagem = 1;
-    }
-  }
-  if (contagem >= 2) sequencias.push({ cor: atual, qtd: contagem });
-
-  sequenciasCores = sequencias.sort((a, b) => b.qtd - a.qtd).slice(0, 3); // As 3 sequências mais frequentes
-
-  document.getElementById('sequencias').textContent = `Sequências: ${sequenciasCores.map(s => `${s.cor} (${s.qtd}x)`).join(', ')}`;
-              }
+  const sequencias = encontrarSequenciasMaisFrequentes(cores);
+  
+  document.getElementById('sequencias').textContent = `Sequências mais frequentes: ${sequencias.map(s => `${s.cor.join(', ')} (${s.qtd}x)`).join(', ')}`;
+}
